@@ -1,8 +1,9 @@
 import { hash, compare } from '@node-rs/bcrypt';
-import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import { UsersService } from '../users/users.services';
-import { createSession, refreshSession, removeSession } from '@/utils/sessionService';
+import { refreshSession, removeSession } from '@/utils/sessionService';
+import { generateToken } from '@/utils/jwtServices';
+import { LoginDto } from './dto/login.dto';
 
 export class AuthService {
   constructor(private usersService: UsersService) {}
@@ -21,21 +22,20 @@ export class AuthService {
     });
 
     const { ...userWithoutPassword } = user;
-    return userWithoutPassword;
+    const token = generateToken(user.id);
+    return { user: userWithoutPassword, token };
   }
 
   async login(data: LoginDto) {
-    const user = await this.usersService.findByEmail(data.email);
-    if (!user) return null;
+    const { email, password } = data;
 
-    const isPasswordValid = await compare(data.password, user.passwordHash);
-    if (!isPasswordValid) return null;
+    const user = await this.usersService.findByEmail(email);
+    if (!user || !(await compare(password, user.passwordHash))) {
+      return null;
+    }
 
-    const sessionId = await createSession(user.id);
-    await this.usersService.update(user.id, { lastLoginAt: new Date() });
-
-    const { ...userWithoutPassword } = user;
-    return { user: userWithoutPassword, sessionId };
+    const token = generateToken(user.id);
+    return { user, token };
   }
 
   async logout(sessionId: string) {

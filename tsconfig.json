@@ -13,6 +13,6 @@
         "@schema/*": ["./schema/*"]
       }
     },
-    "include": ["src/**/*", "config/**/*", "schema/**/*"],
+    "include": ["src/**/*", "config/**/*", "schema/**/*", "drizzle.config.ts"],
     "exclude": ["node_modules"]
   }

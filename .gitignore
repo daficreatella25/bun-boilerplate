@@ -1,21 +1,58 @@
-# Environment variables
-.env
-
-# Node modules
+# Dependencies
 node_modules/
+.pnp
+.pnp.js
 
 # Bun
 bun.lockb
 
+# Testing
+coverage/
+
+# Production
+build/
+dist/
+
+# Drizzle
+drizzle/
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor directories and files
+.idea
+.vscode
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript
+*.tsbuildinfo
+
 # Logs
+logs
 *.log
 
 # OS generated files
 .DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
 Thumbs.db
-
-# Editor directories and files
-.idea/
-*.swp
-*.swo
-.vscode/

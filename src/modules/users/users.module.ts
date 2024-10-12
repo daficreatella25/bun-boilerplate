@@ -1,6 +1,6 @@
 import { Hono } from 'hono';
-
 import { UsersController } from './users.controller';
+import { authGuard } from '@/common/middlewares/auth.guard';
 import { UsersService } from './users.services';
 
 export class UsersModule {
@@ -13,10 +13,16 @@ export class UsersModule {
   }
 
   private setupRoutes(app: Hono) {
-    app.get('/users', (c) => this.usersController.getUsers(c));
-    app.get('/users/:id', (c) => this.usersController.getUser(c));
-    app.post('/users', (c) => this.usersController.createUser(c));
-    app.put('/users/:id', (c) => this.usersController.updateUser(c));
-    app.delete('/users/:id', (c) => this.usersController.deleteUser(c));
+    const users = new Hono();
+
+    users.use('*', authGuard);
+
+    users.get('/', (c) => this.usersController.getUsers(c));
+    users.get('/:id', (c) => this.usersController.getUser(c));
+    users.post('/', (c) => this.usersController.createUser(c));
+    users.put('/:id', (c) => this.usersController.updateUser(c));
+    users.delete('/:id', (c) => this.usersController.deleteUser(c));
+
+    app.route('/users', users);
   }
 }
