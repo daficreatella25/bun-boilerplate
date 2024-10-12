@@ -21,9 +21,8 @@ export class AuthService {
       fullName: data.fullName,
     });
 
-    const { ...userWithoutPassword } = user;
     const token = generateToken(user.id);
-    return { user: userWithoutPassword, token };
+    return { user: this.usersService.mapUserToSafeUser(user), token };
   }
 
   async login(data: LoginDto) {
@@ -35,7 +34,7 @@ export class AuthService {
     }
 
     const token = generateToken(user.id);
-    return { user, token };
+    return { user: this.usersService.mapUserToSafeUser(user), token };
   }
 
   async logout(sessionId: string) {

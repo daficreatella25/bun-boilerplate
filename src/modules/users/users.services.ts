@@ -4,10 +4,13 @@ import { eq } from 'drizzle-orm/expressions';
 import { MySqlInsertValue } from 'drizzle-orm/mysql-core';
 
 type NewUser = Omit<typeof appUsers.$inferInsert, 'id' | 'createdAt' | 'updatedAt'>;
+type User = Awaited<ReturnType<UsersService['findOne']>>;
+type SafeUser = Omit<User, 'passwordHash' | 'isActive' | 'lastLoginAt'>;
 
 export class UsersService {
   async findAll() {
-    return db.select().from(appUsers);
+    const users = await db.select().from(appUsers);
+    return this.mapUsersToSafeUsers(users);
   }
 
   async findOne(id: number) {
@@ -45,5 +48,14 @@ export class UsersService {
   async findByEmail(email: string) {
     const users = await db.select().from(appUsers).where(eq(appUsers.email, email)).limit(1);
     return users[0];
+  }
+
+  mapUserToSafeUser(user: User): SafeUser {
+    const { passwordHash, isActive, lastLoginAt, ...safeUser } = user;
+    return safeUser;
+  }
+
+  mapUsersToSafeUsers(users: User[]): SafeUser[] {
+    return users.map(this.mapUserToSafeUser);
   }
 }
